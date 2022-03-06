@@ -13,7 +13,7 @@ _SUB_ON_SAY                = 'hermes/tts/say'
 _SUB_ON_THINK              = 'hermes/asr/textCaptured'
 _SUB_ON_LISTENING          = 'hermes/asr/startListening'
 _SUB_LEDS_ON_ERROR         = 'hermes/nlu/intentNotRecognized'
-_SUB_INTENT_ON_SUCCESS       = 'hermes/nlu/intentParsed'
+_SUB_INTENT_ON_SUCCESS     = 'hermes/nlu/intentParsed'
 _SUB_ON_PLAY_FINISHED      = 'hermes/audioServer/{}/playFinished'
 _SUB_ON_TTS_FINISHED       = 'hermes/tts/sayFinished'
 _SUB_ON_INTENT             = 'hermes/intent/#'
@@ -43,7 +43,7 @@ def on_connect(client, userdata, flags, rc):
     print("Connected. Waiting for intents.")
 
 
-def on_disconnect(client, userdata, flags, rc):
+def on_disconnect(client, userdata, rc):
     """Called when disconnected from MQTT broker."""
     client.reconnect()
 
@@ -51,15 +51,10 @@ def on_disconnect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     """Called each time a message is received on a subscribed topic."""
     nlu_payload = json.loads(msg.payload)
-    # print("-----------------------------")
-    # print(msg.topic)
-    # print(nlu_payload)
     site_id = nlu_payload["siteId"]
     if msg.topic == _SUB_LEDS_ON_ERROR:
         
         sentence = "Try Again"
-        # print("Recognition failure")
-        # publish text to speaker
         client.publish("hermes/tts/say", json.dumps({"text": sentence, "siteId": site_id}))
     
     elif _hotwordRegex.match(msg.topic):
@@ -80,12 +75,7 @@ def on_message(client, userdata, msg):
     
     elif msg.topic == _SUB_INTENT_ON_SUCCESS:
         pass
-        # print("Got intent:", nlu_payload["intent"]["intentName"])
-
-        # # Speak the text from the intent
-        # sentence = nlu_payload["input"]   
-        # publish text to speaker
-        # client.publish("hermes/tts/say", json.dumps({"text": sentence, "siteId": site_id}))
+        
     else:
         pixels.off()
 
