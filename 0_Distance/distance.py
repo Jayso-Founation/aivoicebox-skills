@@ -45,6 +45,7 @@ def on_disconnect(client, userdata, rc):
 
 def on_message(client, userdata, msg):
     """Called each time a message is received on a subscribed topic."""
+    global detection
     if msg.topic == _SUB_LEDS_ON_ERROR or msg.topic == _SUB_ON_TTS_FINISHED or msg.topic == _SUB_INTENT_ON_SUCCESS:
         detection = True
         
